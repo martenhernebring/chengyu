@@ -27,4 +27,12 @@ public class Word {
                 ", length=" + length +
                 '}';
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public int getLength() {
+        return length;
+    }
 }

@@ -121,17 +121,24 @@ class ChengYuServiceTest {
         String stringTooLong = IOUtils.toString(fis, StandardCharsets.UTF_8);
         var result = chengYuService.createMap(stringTooLong);
         System.out.println("ChengYu,Count");
-        var sr = ChengYuServiceTest.sortByValue((HashMap<String, Integer>) result);
-        sr.forEach((key, value) -> System.out.println(key + "," + value));
-        var db = repository.findAll();
-        db.forEach(System.out::println);
+        ChengYuServiceTest.sortByValue((HashMap<String, Integer>) result)
+                .forEach((key, value) -> System.out.println(key + "," + value));
+        //var db = repository.findAll();
+        //db.forEach(System.out::println);
+    }
+
+    @Test
+    void thinkEveryoneCountsOnce() {
+        String thinkEveryone = "大家想一想大家想一想大家想一想";
+        var result = chengYuService.createMap(thinkEveryone);
+        assertEquals(1, result.size());
     }
 
     public static HashMap<String, Integer>
     sortByValue(HashMap<String, Integer> hm) {
         return hm.entrySet()
         .stream()
-        .sorted(Map.Entry.comparingByValue())
+        .sorted(Map.Entry.<String, Integer> comparingByValue().reversed())
         .collect(Collectors.toMap(
                 Map.Entry::getKey,
                 Map.Entry::getValue,

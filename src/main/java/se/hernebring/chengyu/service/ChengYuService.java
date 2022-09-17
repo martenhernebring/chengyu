@@ -1,21 +1,17 @@
 package se.hernebring.chengyu.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.hernebring.chengyu.model.Word;
 import se.hernebring.chengyu.repository.ChengYuRepository;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ChengYuService {
 
     private ChengYuRepository repository;
 
-    private final static int ONE = 10;
+    private static int unit;
     private final HashMap<String,Integer> counter = new LinkedHashMap<>();
 
     public ChengYuService(ChengYuRepository repository) {
@@ -23,9 +19,12 @@ public class ChengYuService {
     }
 
     public Map<String,Integer> createMap(String text) {
-        if(text.length() < ONE)
+        unit = 10;
+        if(text.length() < unit)
             return counter;
-        count(text);
+        for(; unit > 3; unit--)
+            count(text);
+
         counter.entrySet().removeIf(entry -> entry.getValue() < 3);
         //remove(new String[]{"人類", "不同", "來說", "層次"});
         return counter;
@@ -39,18 +38,29 @@ public class ChengYuService {
 //    }
 
     private void count(String text) {
-        int[] additional = new int[ONE - 1];
+        var iterator = repository.findAll().iterator();
+        Set<Integer> alreadyTaken = new HashSet<>();
+        while(iterator.hasNext()) {
+            var word = iterator.next();
+            var id = word.getId();
+            for(int i = 0; i < word.getLength(); i++)
+                alreadyTaken.add((int) (id + i));
+
+        }
+        int[] additional = new int[unit - 1];
         Arrays.fill(additional, -1);
-        char[] chars = new char[ONE];
-        //,'是', '要','到','們', '一', '這', '高', '之', '走', '有', '個', '家', '何', '就','的'
-        char[] exclude = {'、', '，', '。', '《','》','（','）','「','」','？', '：', '；'};
+        char[] chars = new char[unit];
+        char[] exclude = {'、', '，', '。', '《','》','（','）','「','」','？', '：', '；', '…', '！'};
         final HashMap<String,Integer> firstTime = new HashMap<>();
-        for(int i = 0; i < text.length() - ONE - 1; i++) {
+        for(int i = 0; i < text.length() - unit - 1; i++) {
+            if(alreadyTaken.contains(i))
+                continue;
+
             for(int j = 0; j<chars.length; j++)
                 chars[j] = text.charAt(i+j);
 
             if(charsNotEqualTo(chars, exclude) && charsNotWhitespace(chars) && indexNot(additional, i)) {
-                String chengYu = text.substring(i, i + ONE);
+                String chengYu = text.substring(i, i + unit);
                 Integer index = firstTime.get(chengYu);
                 if(index == null) {
                     firstTime.put(chengYu, i);
@@ -61,14 +71,14 @@ public class ChengYuService {
                         counter.put(chengYu, -i);
                     else {
                         if (frequency < 3) {
-                            repository.save(new Word(firstTime.get(chengYu), ONE));
-                            repository.save(new Word(-frequency, ONE));
+                            repository.save(new Word(firstTime.get(chengYu), unit));
+                            repository.save(new Word(-frequency, unit));
                             counter.put(chengYu, 3);
                         }
                         else
                             counter.put(chengYu, ++frequency);
 
-                        repository.save(new Word(i, ONE));
+                        repository.save(new Word(i, unit));
                     }
                     for (int j = 0; j < additional.length; j++) {
                         additional[j] = i + j + 1;
