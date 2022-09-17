@@ -56,13 +56,13 @@ public class ChengYuService {
                     firstTime.put(chengYu, i);
                     continue;
                 } else {
-                    if (counter.get(chengYu) == null)
+                    Integer frequency = counter.get(chengYu);
+                    if (frequency == null)
                         counter.put(chengYu, -i);
                     else {
-                        Integer frequency = counter.get(chengYu);
                         if (frequency < 3) {
                             repository.save(new Word(firstTime.get(chengYu), ONE));
-                            repository.save(new Word(-counter.get(chengYu), ONE));
+                            repository.save(new Word(-frequency, ONE));
                             counter.put(chengYu, 3);
                         }
                         else
@@ -80,27 +80,27 @@ public class ChengYuService {
 
     private boolean indexNot(int[] additional, int i) {
         boolean result = true;
-        for(int a : additional) {
+        for(int a : additional)
             result = result & (i != a);
-        }
+
         return result;
     }
 
     private boolean charsNotEqualTo(char[] chars1, char[] chars2) {
         boolean result = true;
         for(char i : chars1) {
-            for(char j : chars2) {
+            for(char j : chars2)
                 result = result & (i != j);
-            }
+
         }
         return result;
     }
 
     private boolean charsNotWhitespace(char[] chars) {
         boolean result = true;
-        for (char aChar : chars) {
+        for (char aChar : chars)
             result = result & (!Character.isWhitespace(aChar));
-        }
+
         return result;
     }
 }
