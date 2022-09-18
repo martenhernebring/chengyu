@@ -9,9 +9,7 @@ import java.util.*;
 @Service
 public class ChengYuService {
 
-    private ChengYuRepository repository;
-
-    private static int unit;
+    private final ChengYuRepository repository;
     private final HashMap<String,Integer> counter = new LinkedHashMap<>();
 
     public ChengYuService(ChengYuRepository repository) {
@@ -19,25 +17,17 @@ public class ChengYuService {
     }
 
     public Map<String,Integer> createMap(String text) {
-        unit = 10;
+        int unit = 10;
         if(text.length() < unit)
             return counter;
         for(; unit > 3; unit--)
-            count(text);
+            count(text, unit);
 
         counter.entrySet().removeIf(entry -> entry.getValue() < 3);
-        //remove(new String[]{"人類", "不同", "來說", "層次"});
         return counter;
     }
 
-//    private void remove(String[] toBeExcluded) {
-//        for (String word : toBeExcluded) {
-//            counter.entrySet().removeIf(
-//                    entry -> entry.getKey().contains(word));
-//        }
-//    }
-
-    private void count(String text) {
+    void count(String text, int unit) {
         var iterator = repository.findAll().iterator();
         Set<Integer> alreadyTaken = new HashSet<>();
         while(iterator.hasNext()) {
@@ -62,25 +52,33 @@ public class ChengYuService {
             if(charsNotEqualTo(chars, exclude) && charsNotWhitespace(chars) && indexNot(additional, i)) {
                 String chengYu = text.substring(i, i + unit);
                 Integer index = firstTime.get(chengYu);
-                if(index == null) {
+                if(index == null)
                     firstTime.put(chengYu, i);
-                    continue;
-                } else {
+                else {
                     Integer frequency = counter.get(chengYu);
-                    if (frequency == null)
+                    if (frequency == null) {
                         counter.put(chengYu, -i);
-                    else if (frequency < 3) {
-                        repository.save(new Word(firstTime.get(chengYu), unit));
-                        repository.save(new Word(-frequency, unit));
-                        counter.put(chengYu, 3);
-                        repository.save(new Word(i, unit));
-                    } else {
-                        counter.put(chengYu, ++frequency);
-                        repository.save(new Word(i, unit));
-                        for (int j = 0; j < additional.length; j++)
-                            additional[j] = i + j + 1;
-
+                        continue;
                     }
+                    else if (frequency < 3) {
+                        int first = firstTime.get(chengYu);
+                        if(first + unit > -frequency) {
+                            counter.put(chengYu, -i);
+                            continue;
+                        }
+                        if(-frequency + unit <= i) {
+                            repository.save(new Word(first, unit));
+                            repository.save(new Word(-frequency, unit));
+                            counter.put(chengYu, 3);
+                        } else
+                            continue;
+
+                    } else
+                        counter.put(chengYu, ++frequency);
+
+                    repository.save(new Word(i, unit));
+                    for (int j = 0; j < additional.length; j++)
+                        additional[j] = i + j + 1;
                 }
             }
         }
