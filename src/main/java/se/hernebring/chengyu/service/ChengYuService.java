@@ -52,7 +52,7 @@ public class ChengYuService {
         char[] chars = new char[unit];
         char[] exclude = {'、', '，', '。', '《','》','（','）','「','」','？', '：', '；', '…', '！'};
         final HashMap<String,Integer> firstTime = new HashMap<>();
-        for(int i = 0; i < text.length() - unit - 1; i++) {
+        for(int i = 0; i <= text.length() - unit; i++) {
             if(alreadyTaken.contains(i))
                 continue;
 
@@ -69,19 +69,17 @@ public class ChengYuService {
                     Integer frequency = counter.get(chengYu);
                     if (frequency == null)
                         counter.put(chengYu, -i);
-                    else {
-                        if (frequency < 3) {
-                            repository.save(new Word(firstTime.get(chengYu), unit));
-                            repository.save(new Word(-frequency, unit));
-                            counter.put(chengYu, 3);
-                        }
-                        else
-                            counter.put(chengYu, ++frequency);
-
+                    else if (frequency < 3) {
+                        repository.save(new Word(firstTime.get(chengYu), unit));
+                        repository.save(new Word(-frequency, unit));
+                        counter.put(chengYu, 3);
                         repository.save(new Word(i, unit));
-                    }
-                    for (int j = 0; j < additional.length; j++) {
-                        additional[j] = i + j + 1;
+                    } else {
+                        counter.put(chengYu, ++frequency);
+                        repository.save(new Word(i, unit));
+                        for (int j = 0; j < additional.length; j++)
+                            additional[j] = i + j + 1;
+
                     }
                 }
             }
