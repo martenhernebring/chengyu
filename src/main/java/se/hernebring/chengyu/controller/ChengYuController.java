@@ -1,47 +1,38 @@
-package se.hernebring.chengyu.service;
+package se.hernebring.chengyu.controller;
 
-import org.springframework.stereotype.Service;
-import se.hernebring.chengyu.model.Word;
-import se.hernebring.chengyu.repository.ChengYuRepository;
+import org.springframework.stereotype.Controller;
+import se.hernebring.chengyu.service.WordService;
 
 import java.util.*;
 
-@Service
-public class ChengYuService {
+@Controller
+public class ChengYuController {
 
-    private final ChengYuRepository repository;
-    private final HashMap<String,Integer> counter = new LinkedHashMap<>();
+    final WordService wordService;
 
-    public ChengYuService(ChengYuRepository repository) {
-        this.repository = repository;
+    public ChengYuController(WordService articleService) {
+        this.wordService = articleService;
     }
 
     public Map<String,Integer> createMap(String text) {
         int unit = 10;
+        final Map<String,Integer> counter = new LinkedHashMap<>();
         if(text.length() < unit)
             return counter;
         for(; unit > 3; unit--)
-            count(text, unit);
+            count(text, unit, counter);
 
         counter.entrySet().removeIf(entry -> entry.getValue() < 3);
         return counter;
     }
 
-    void count(String text, int unit) {
-        var iterator = repository.findAll().iterator();
-        Set<Integer> alreadyTaken = new HashSet<>();
-        while(iterator.hasNext()) {
-            var word = iterator.next();
-            var id = word.getId();
-            for(int i = 0; i < word.getLength(); i++)
-                alreadyTaken.add((int) (id + i));
-
-        }
+    void count(String text, int unit, Map<String,Integer> counter) {
         int[] additional = new int[unit - 1];
         Arrays.fill(additional, -1);
         char[] chars = new char[unit];
         char[] exclude = {'、', '，', '。', '《','》','（','）','「','」','？', '：', '；', '…', '！'};
         final HashMap<String,Integer> firstTime = new HashMap<>();
+        Set<Integer> alreadyTaken = wordService.findAlreadyTaken();
         for(int i = 0; i <= text.length() - unit; i++) {
             if(alreadyTaken.contains(i))
                 continue;
@@ -58,27 +49,15 @@ public class ChengYuService {
                     Integer frequency = counter.get(chengYu);
                     if (frequency == null) {
                         counter.put(chengYu, -i);
-                        continue;
-                    }
-                    else if (frequency < 3) {
+                    } else {
                         int first = firstTime.get(chengYu);
-                        if(first + unit > -frequency) {
-                            counter.put(chengYu, -i);
-                            continue;
-                        }
-                        if(-frequency + unit <= i) {
-                            repository.save(new Word(first, unit));
-                            repository.save(new Word(-frequency, unit));
-                            counter.put(chengYu, 3);
-                        } else
-                            continue;
+                        Integer second = wordService.secondOccurrence(unit, i, first, frequency);
+                        if(second != null)
+                            counter.put(chengYu, second);
+                        for (int j = 0; j < additional.length; j++)
+                            additional[j] = i + j + 1;
+                    }
 
-                    } else
-                        counter.put(chengYu, ++frequency);
-
-                    repository.save(new Word(i, unit));
-                    for (int j = 0; j < additional.length; j++)
-                        additional[j] = i + j + 1;
                 }
             }
         }

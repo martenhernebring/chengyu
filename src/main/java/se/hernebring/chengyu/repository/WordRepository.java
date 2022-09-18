@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 import se.hernebring.chengyu.model.Word;
 
 @Repository
-public interface ChengYuRepository  extends JpaRepository<Word, Long> {
+public interface WordRepository extends JpaRepository<Word, Long> {
 }
