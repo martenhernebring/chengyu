@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.hernebring.chengyu.dto.WordMeta;
 import se.hernebring.chengyu.model.Word;
 import se.hernebring.chengyu.repository.WordRepository;
 
@@ -33,8 +34,9 @@ class WordServiceTest {
     }
 
     @Test
-    void secondOccurrenceReturnsNull() {
-        var result = service.secondOccurrence(4, 8, 0, -5);
+    void secondOccurrenceReturnsNullWhen4charsAndFirstWas0AndSecondWas5AndThirdWas8() {
+        WordMeta wm = new WordMeta(4, 0, -5, 8);
+        var result = service.secondOccurrence(wm);
         assertNull(result);
     }
 

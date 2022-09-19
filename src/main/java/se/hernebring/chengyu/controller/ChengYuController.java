@@ -1,6 +1,7 @@
 package se.hernebring.chengyu.controller;
 
 import org.springframework.stereotype.Controller;
+import se.hernebring.chengyu.dto.WordMeta;
 import se.hernebring.chengyu.service.WordService;
 
 import java.util.*;
@@ -33,29 +34,29 @@ public class ChengYuController {
         char[] exclude = {'、', '，', '。', '《','》','（','）','「','」','？', '：', '；', '…', '！'};
         final HashMap<String,Integer> firstTime = new HashMap<>();
         Set<Integer> alreadyTaken = wordService.findAlreadyTaken();
-        for(int i = 0; i <= text.length() - unit; i++) {
-            if(alreadyTaken.contains(i))
+        for(int index = 0; index <= text.length() - unit; index++) {
+            if(alreadyTaken.contains(index))
                 continue;
 
             for(int j = 0; j<chars.length; j++)
-                chars[j] = text.charAt(i+j);
+                chars[j] = text.charAt(index+j);
 
-            if(charsNotEqualTo(chars, exclude) && charsNotWhitespace(chars) && indexNot(additional, i)) {
-                String chengYu = text.substring(i, i + unit);
-                Integer index = firstTime.get(chengYu);
-                if(index == null)
-                    firstTime.put(chengYu, i);
+            if(charsNotEqualTo(chars, exclude) && charsNotWhitespace(chars) && indexNot(additional, index)) {
+                String chengYu = text.substring(index, index + unit);
+                Integer first = firstTime.get(chengYu);
+                if(first == null)
+                    firstTime.put(chengYu, index);
                 else {
                     Integer frequency = counter.get(chengYu);
                     if (frequency == null) {
-                        counter.put(chengYu, -i);
+                        counter.put(chengYu, -index);
                     } else {
-                        int first = firstTime.get(chengYu);
-                        Integer second = wordService.secondOccurrence(unit, i, first, frequency);
+                        WordMeta wm = new WordMeta(unit, first, frequency, index);
+                        Integer second = wordService.secondOccurrence(wm);
                         if(second != null)
                             counter.put(chengYu, second);
                         for (int j = 0; j < additional.length; j++)
-                            additional[j] = i + j + 1;
+                            additional[j] = index + j + 1;
                     }
 
                 }
