@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>se.hernebring</groupId>
 	<artifactId>chengyu</artifactId>
-	<version>0.0.4</version>
+	<version>0.1.0</version>
 	<name>ChengYu</name>
 	<description>Finds any 4 character repetition in a text</description>
 	<properties>
@@ -38,6 +38,12 @@
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.11.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
+			<version>1.4</version>
 		</dependency>
 
 	</dependencies>

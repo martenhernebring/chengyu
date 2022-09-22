@@ -1,5 +1,7 @@
 package se.hernebring.chengyu.controller;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import se.hernebring.chengyu.service.WordService;
 
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -33,9 +36,18 @@ public class ChengYuControllerIT {
         FileInputStream fis = new FileInputStream("src/test/resources/stringtoolong.txt");
         String stringTooLong = IOUtils.toString(fis, StandardCharsets.UTF_8);
         var result = chengYuController.createMap(stringTooLong);
-        System.out.println("ChengYu,Count");
-        ChengYuControllerIT.sortByValue((HashMap<String, Integer>) result)
-                .forEach((key, value) -> System.out.println(key + "," + value));
+        ChengYuControllerIT.sortByValue((HashMap<String, Integer>) result);
+        FileWriter out = new FileWriter("src/test/resources/zf.csv");
+        try (CSVPrinter printer = new CSVPrinter(out, CSVFormat.DEFAULT
+                .withHeader(new String[] { "ChengYu", "Count"}))) {
+            result.forEach((key, value) -> {
+                try {
+                    printer.printRecord(key, value);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        }
     }
 
     public static HashMap<String, Integer> sortByValue(HashMap<String, Integer> hm) {
