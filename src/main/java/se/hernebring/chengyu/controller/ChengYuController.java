@@ -40,6 +40,7 @@ public class ChengYuController {
         Arrays.fill(additional, -1);
         char[] chars = new char[unit];
         char[] exclude = {'、', '，', '。', '《','》','（','）','「','」','？', '：', '；', '…', '！', '—'};
+        char[] endOnly = {'們'};
         final HashMap<String,Integer> firstTime = new HashMap<>();
         Set<Integer> alreadyTaken = wordService.findAlreadyTaken();
         for(int index = 0; index <= text.length() - unit; index++) {
@@ -51,7 +52,8 @@ public class ChengYuController {
 
             if(charsNotEqualTo(chars, exclude) &&
                     charsNotWhitespace(chars) &&
-                    indexNot(additional, index)) {
+                    indexNot(additional, index) &&
+                    charsExistsInEndOnly(chars, endOnly)) {
                 String chengYu = text.substring(index, index + unit);
                 Integer first = firstTime.get(chengYu);
                 if(first == null)
@@ -89,6 +91,16 @@ public class ChengYuController {
         for(char i : chars1) {
             for(char j : chars2)
                 result = result & (i != j);
+
+        }
+        return result;
+    }
+
+    private boolean charsExistsInEndOnly(char[] chars, char[] endOnly) {
+        boolean result = true;
+        for(int i = 0; i < chars.length - 1; i++) {
+            for(char j : endOnly)
+                result = result & (chars[i] != j);
 
         }
         return result;

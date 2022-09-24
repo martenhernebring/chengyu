@@ -26,7 +26,7 @@ public class ChengYuControllerTest {
     }
 
     @Test
-    void thinkEveryoneCountsOnce() {
+    void betweenPeopleCountsOnce() {
         String thinkEveryone = "人與人之間人與人之間人與人之間";
         var result = controller.createMap(thinkEveryone);
         assertEquals(3, result.get("人與人之間"));
@@ -124,10 +124,10 @@ public class ChengYuControllerTest {
     }
 
     @Test
-    @Disabled
     void menIsOnlyAtTheEnd() {
-        var result = controller.createMap("我們可以我們可以我們可以");
-        assertTrue(result.isEmpty());
+        var result = controller.createMap("我們可以大覺者們大覺者們我們可以大覺者們我們可以");
+        assertEquals(3, result.get("大覺者們"));
+        assertEquals(1, result.size());
     }
 
     @Test
