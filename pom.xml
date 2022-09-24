@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>se.hernebring</groupId>
 	<artifactId>chengyu</artifactId>
-	<version>0.1.0</version>
+	<version>0.1.1</version>
 	<name>ChengYu</name>
 	<description>Finds any 4 character repetition in a text</description>
 	<properties>

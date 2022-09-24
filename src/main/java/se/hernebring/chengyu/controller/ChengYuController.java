@@ -25,14 +25,21 @@ public class ChengYuController {
             count(text, unit);
 
         counter.entrySet().removeIf(entry -> entry.getValue() < 3);
+        remove(new String[]{"東西"});
         return counter;
+    }
+
+    private void remove(String[] toBeExcluded) {
+        for (String word : toBeExcluded)
+            counter.entrySet().removeIf(entry -> entry.getKey().contains(word));
+
     }
 
     void count(String text, int unit) {
         int[] additional = new int[unit - 1];
         Arrays.fill(additional, -1);
         char[] chars = new char[unit];
-        char[] exclude = {'、', '，', '。', '《','》','（','）','「','」','？', '：', '；', '…', '！'};
+        char[] exclude = {'、', '，', '。', '《','》','（','）','「','」','？', '：', '；', '…', '！', '—'};
         final HashMap<String,Integer> firstTime = new HashMap<>();
         Set<Integer> alreadyTaken = wordService.findAlreadyTaken();
         for(int index = 0; index <= text.length() - unit; index++) {
