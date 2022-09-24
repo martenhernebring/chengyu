@@ -1,7 +1,6 @@
 package se.hernebring.chengyu.controller;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -131,14 +130,10 @@ public class ChengYuControllerTest {
     }
 
     @Test
-    @Disabled
-    void ICanOnlyBe2ndToLast() {
-        //從此以後, 就可以了, 從今以後, 走出世間法修煉以後, 都可以做, 是可以的 is ok
-        //以為自己, 我們就可以, 都可以看的, 出世間法以, 有的人可以, 我們可以 is not ok
-        //所以我們, 可以看到, 所以我們講, 所以這個, 所以往往, 所以大家, 所以有的人, 所以不能, 可以無條件的幫, 可以直接, 所以你不,
-        // 可以給你, 所以就不, 可以產生, 所以這種, 所以他就, 所以一旦, 可以達到, 可以修煉, 所以大家千萬注意, 所以有些人,
-        // 所以我們這,可以顯現出,, 所以我們要, 所以人的, 可以改變, 可以長功, 可以得到, 可以透過, 所以你看, 所以它能, 所以他的,
-        // 可以延長, 所以他講, 所以他要 is not ok
+    void iCanOnlyBe2ndToLast() {
+        var result = controller.createMap("從今以後所以我們所以我們從今以後所以我們從今以後");
+        assertEquals(3, result.get("從今以後"));
+        assertEquals(1, result.size());
     }
 
 }

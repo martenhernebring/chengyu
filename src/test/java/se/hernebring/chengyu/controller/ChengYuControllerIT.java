@@ -19,8 +19,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -72,7 +72,7 @@ public class ChengYuControllerIT {
     private void printToFile(Map<String, Integer> result) throws IOException {
         FileWriter out = new FileWriter("src/test/resources/zf.csv");
         try (CSVPrinter printer = new CSVPrinter(out, CSVFormat.DEFAULT
-                .withHeader(new String[] { "ChengYu", "Count"}))) {
+                .withHeader("ChengYu", "Count"))) {
             result.forEach((key, value) -> {
                 try {
                     printer.printRecord(key, value);

@@ -12,7 +12,6 @@ import se.hernebring.chengyu.repository.WordRepository;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
